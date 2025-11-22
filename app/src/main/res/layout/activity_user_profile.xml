@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="24dp"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Captain Barboza"
+            android:textSize="32sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_marginTop="50dp"  android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:id="@+id/summaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Here is a workout schedule based on your health survey.
+You're able to safely lift around 25–35 pounds and train 3–4 times a week.
+Your starting focus will be: ARMS (Biceps, Triceps, Forearms), Shoulders, and Traps."
+            android:textSize="20sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="#444444"
+            android:layout_marginBottom="25dp" />
+
+        <TextView
+            android:id="@+id/muscleList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Muscles you’ll train:\n• Shoulders\n• Biceps\n• Traps\n• Forearms\n• Upper Back\n• Arms"
+            android:textSize="20sp"
+            android:textColor="#222222"
+            android:layout_marginBottom="25dp" />
+
+        <ImageView
+            android:id="@+id/muscleImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/muscle_group"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="35dp" />
+
+        <TextView
+            android:id="@+id/scheduleHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recommended Schedule"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:id="@+id/scheduleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Train 3–4 times per week\n• Start at 25–35 lb dumbbells\n• Focus on form and consistency\n• Increase weight slightly each week\n• Rest 60–90 seconds between sets\n"
+            android:textSize="20sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="#444444"
+            android:layout_marginBottom="50dp" />
+
+        <Button
+            android:id="@+id/dietPlanButton"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:text="Diet Plan"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:backgroundTint="#0D6EFD"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/workoutRoutineButton"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:text="Workout Routine"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:backgroundTint="#0D6EFD"
+            android:layout_marginBottom="40dp" />
+
+    </LinearLayout>
+</ScrollView>
