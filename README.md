@@ -1,4 +1,4 @@
-# ![Fitness\_Stricker Logo](res/fs_logo.png)
+# ![Fitness_Stricker Logo](app/src/main/res/drawable/fs_logo.png)
 
 # Fitness_Stricker
 
