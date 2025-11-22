@@ -130,7 +130,7 @@ git clone https://github.com/NewYork3161/Fitness_Stricker.git
 
 For support, inquiries, or partnership opportunities:
 
-* **Email:** [[your-email@example.com](mailto:your-email@example.com)]
+
 * **GitHub Issues:** [https://github.com/NewYork3161/Fitness_Stricker/issues](https://github.com/NewYork3161/Fitness_Stricker/issues)
 
 ---
