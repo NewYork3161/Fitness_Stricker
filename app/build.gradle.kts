@@ -1,22 +1,20 @@
 import java.util.Properties
 
 plugins {
-    // Use aliases from the version catalog
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 
-    // Add Kotlin Serialization plugin
+    // Kotlin Serialization
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
 }
 
-// ⬇️ START: API KEY LOADING LOGIC
+// Load local.properties
 val properties = Properties().apply {
-    val localPropertiesFile = project.rootProject.file("local.properties")
-    if (localPropertiesFile.exists()) {
-        load(localPropertiesFile.inputStream())
+    val localProps = project.rootProject.file("local.properties")
+    if (localProps.exists()) {
+        load(localProps.inputStream())
     }
 }
-// ⬆️ END: API KEY LOADING LOGIC
 
 android {
     namespace = "com.example.fitness_striker"
@@ -31,6 +29,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // API KEY
         val apiKey = properties.getProperty("GEMINI_API_KEY") ?: ""
         buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
     }
@@ -59,24 +58,18 @@ android {
     }
 }
 
-repositories {
-    google()
-    mavenCentral()
-}
-
 dependencies {
-    // AndroidX dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // Gemini and Coroutines
+    // Gemini + Coroutines
     implementation(libs.google.ai.client.generativeai)
     implementation(libs.kotlinx.coroutines.android)
 
-    // Kotlin Serialization runtime library
+    // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     // Testing

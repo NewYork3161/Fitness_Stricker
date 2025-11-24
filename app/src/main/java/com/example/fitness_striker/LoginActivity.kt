@@ -13,6 +13,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var db: LoginDatabase
     private lateinit var prefs: SharedPreferences
+    private lateinit var loginPrefs: SharedPreferences   // <-- NEW memory prefs
 
     private val MAX_ATTEMPTS = 5
     private val LOCKOUT_DURATION_MS = 5 * 60 * 1000L // 5 minutes
@@ -23,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
 
         db = LoginDatabase(this)
         prefs = getSharedPreferences("login_security", MODE_PRIVATE)
+        loginPrefs = getSharedPreferences("login_memory", MODE_PRIVATE) // <-- NEW
 
         val emailInput = findViewById<EditText>(R.id.emailInput)
         val passwordInput = findViewById<EditText>(R.id.passwordInput)
@@ -30,6 +32,13 @@ class LoginActivity : AppCompatActivity() {
         val createAccountBtn = findViewById<Button>(R.id.createAccountBtn)
         val loginBtn = findViewById<Button>(R.id.loginBtn)
         val updateUserBtn = findViewById<Button>(R.id.updateUserBtn)
+        val googleLoginBtn = findViewById<Button>(R.id.googleLoginBtn) // <-- NEW
+
+        // LOAD SAVED LOGIN IF IT EXISTS
+        val savedEmail = loginPrefs.getString("email", "")
+        val savedPassword = loginPrefs.getString("password", "")
+        emailInput.setText(savedEmail)
+        passwordInput.setText(savedPassword)
 
         // CREATE ACCOUNT
         createAccountBtn.setOnClickListener {
@@ -39,6 +48,11 @@ class LoginActivity : AppCompatActivity() {
         // UPDATE USER
         updateUserBtn.setOnClickListener {
             startActivity(Intent(this, UpdateUserActivity::class.java))
+        }
+
+        // GOOGLE LOGIN (UI ONLY FOR NOW)
+        googleLoginBtn.setOnClickListener {
+            Toast.makeText(this, "Google Login coming soon!", Toast.LENGTH_SHORT).show()
         }
 
         // LOGIN BUTTON
@@ -69,7 +83,13 @@ class LoginActivity : AppCompatActivity() {
                 resetLockout()
                 Toast.makeText(this, "Login successful.", Toast.LENGTH_SHORT).show()
 
-                // ⭐ THIS IS WHERE YOU NAVIGATE AFTER LOGIN ⭐
+                // SAVE LOGIN (Remember Me)
+                loginPrefs.edit()
+                    .putString("email", email)
+                    .putString("password", password)
+                    .apply()
+
+                // GO TO HEALTH SURVEY
                 val intent = Intent(this, HealthSurveyActivity::class.java)
                 startActivity(intent)
                 finish()

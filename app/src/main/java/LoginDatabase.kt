@@ -44,9 +44,6 @@ class LoginDatabase(context: Context) :
         onCreate(db)
     }
 
-    // =============================
-    // INSERT NEW USER
-    // =============================
     fun insertUser(firstname: String, lastname: String, email: String, password: String): Boolean {
         val db = writableDatabase
         val salt = generateSalt()
@@ -63,9 +60,6 @@ class LoginDatabase(context: Context) :
         return db.insert(TABLE_USERS, null, values) != -1L
     }
 
-    // =============================
-    // CHECK USER LOGIN
-    // =============================
     fun validateUser(email: String, password: String): Boolean {
         val db = readableDatabase
 
@@ -88,9 +82,6 @@ class LoginDatabase(context: Context) :
         return storedHash == inputHash
     }
 
-    // =============================
-    // CHECK IF NEW PASSWORD == OLD
-    // =============================
     fun isSamePassword(email: String, newPassword: String): Boolean {
         val db = readableDatabase
 
@@ -101,7 +92,7 @@ class LoginDatabase(context: Context) :
 
         if (!cursor.moveToFirst()) {
             cursor.close()
-            return false  // user not found → treat as not same
+            return false
         }
 
         val storedHash = cursor.getString(0)
@@ -112,9 +103,6 @@ class LoginDatabase(context: Context) :
         return storedHash == newHash
     }
 
-    // =============================
-    // UPDATE USER PASSWORD
-    // =============================
     fun updatePassword(email: String, newPassword: String): Boolean {
         val db = writableDatabase
 
@@ -125,7 +113,7 @@ class LoginDatabase(context: Context) :
 
         if (!cursor.moveToFirst()) {
             cursor.close()
-            return false // no such user
+            return false
         }
 
         val salt = cursor.getString(0)
@@ -140,9 +128,11 @@ class LoginDatabase(context: Context) :
         return db.update(TABLE_USERS, values, "$COLUMN_EMAIL = ?", arrayOf(email)) > 0
     }
 
-    // =============================
-    // SALT + SHA-256 HELPERS
-    // =============================
+    fun deleteUser(email: String): Boolean {
+        val db = writableDatabase
+        return db.delete(TABLE_USERS, "$COLUMN_EMAIL = ?", arrayOf(email)) > 0
+    }
+
     private fun generateSalt(): String {
         val bytes = ByteArray(16)
         SecureRandom().nextBytes(bytes)
