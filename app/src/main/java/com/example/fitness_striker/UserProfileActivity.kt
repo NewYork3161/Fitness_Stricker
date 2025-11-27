@@ -3,6 +3,7 @@ package com.example.fitness_striker
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class UserProfileActivity : AppCompatActivity() {
@@ -10,20 +11,29 @@ class UserProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
 
-        // Buttons
         val dietBtn = findViewById<Button>(R.id.dietPlanButton)
         val workoutBtn = findViewById<Button>(R.id.workoutRoutineButton)
+        val profileImage = findViewById<ImageView>(R.id.profileImage)
+        val editProfileImageBtn = findViewById<Button>(R.id.profileImageEditButton)
 
-        // Open Diet Plan Activity
+        // Diet Plan
         dietBtn.setOnClickListener {
-            val intent = Intent(this, DietPlanActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, DietPlanActivity::class.java))
         }
 
-        // Open Workout Routine Activity
+        // Workout Routine
         workoutBtn.setOnClickListener {
-            val intent = Intent(this, WorkoutRoutineActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, WorkoutRoutineActivity::class.java))
+        }
+
+        // Profile Image → Profile Settings
+        profileImage.setOnClickListener {
+            startActivity(Intent(this, UserProfileSettingsActivity::class.java))
+        }
+
+        // NEW: Edit button → Profile Settings
+        editProfileImageBtn.setOnClickListener {
+            startActivity(Intent(this, UserProfileSettingsActivity::class.java))
         }
     }
 }

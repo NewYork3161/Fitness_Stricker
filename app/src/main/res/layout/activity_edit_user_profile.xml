@@ -1,10 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="#FFFFFF"
     tools:context=".EditUserProfileActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="120dp">
+
+        <!-- FIRST NAME FIELD -->
+        <EditText
+            android:id="@+id/editFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#E5E5E5"
+            android:hint="Michael"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- LAST NAME FIELD -->
+        <EditText
+            android:id="@+id/editLastName"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#E5E5E5"
+            android:hint="Clark"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- EMAIL FIELD -->
+        <EditText
+            android:id="@+id/editEmail"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="#E5E5E5"
+            android:hint="hudsonriver4151@gmail.com"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_marginBottom="35dp" />
+
+        <!-- BUTTON ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="40dp">
+
+            <Button
+                android:id="@+id/saveEditButton"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:text="Edit"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:backgroundTint="#0D6EFD"
+                android:layout_marginEnd="12dp" />
+
+            <Button
+                android:id="@+id/cancelEditButton"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:backgroundTint="#333333" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

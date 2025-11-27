@@ -1,5 +1,6 @@
 package com.example.fitness_striker
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -20,12 +21,10 @@ import org.json.JSONObject
 
 class HealthSurveyActivity : AppCompatActivity() {
 
-    // --- DATABASE/USER VARIABLES ---
-    // Removed: private lateinit var dbHelper: FitnessDatabaseHelper
-    private val currentUserId = "unique_user_id_123"
-    // -------------------------------
-
+    // --- USER / PREFS ---
     private lateinit var prefs: SharedPreferences
+    private lateinit var currentUserId: String   // tied to the logged-in user
+    // --------------------
 
     // UI Elements
     private lateinit var consentScroll: ScrollView
@@ -83,9 +82,18 @@ class HealthSurveyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_health_survey)
 
+        // Get current user ID passed from login / profile.
+        // You should pass this in the Intent like:
+        // intent.putExtra("EXTRA_USER_ID", userEmailOrId)
+        currentUserId = intent.getStringExtra(EXTRA_USER_ID) ?: "guest_user"
+        Log.d("HealthSurvey", "Current user id: $currentUserId")
+
         prefs = getSharedPreferences("survey_prefs", MODE_PRIVATE)
 
-        if (prefs.getBoolean("survey_completed", false)) {
+        // Check if THIS USER has already completed the survey
+        val surveyKey = getSurveyKeyForUser(currentUserId)
+        if (prefs.getBoolean(surveyKey, false)) {
+            // This user has already completed the survey → go straight to profile
             goToUserProfile()
             return
         }
@@ -107,6 +115,7 @@ class HealthSurveyActivity : AppCompatActivity() {
     }
 
     private fun setupConsent() {
+        // Show consent, hide questions
         questionText.visibility = View.GONE
         questionButtonsLayout.visibility = View.GONE
 
@@ -123,6 +132,7 @@ class HealthSurveyActivity : AppCompatActivity() {
     }
 
     private fun showFirstQuestion() {
+        // Hide consent, show questions
         consentScroll.visibility = View.GONE
         agreeButton.visibility = View.GONE
         disagreeButton.visibility = View.GONE
@@ -130,17 +140,24 @@ class HealthSurveyActivity : AppCompatActivity() {
         questionText.visibility = View.VISIBLE
         questionButtonsLayout.visibility = View.VISIBLE
 
+        currentIndex = 0
         questionText.text = questions[currentIndex]
     }
 
     private fun handleAnswer(answer: String) {
         answers[questions[currentIndex]] = answer
 
-        // TODO — Save to SQLite (database removed for now)
-        // insertAnswerToDatabase(currentUserId, questions[currentIndex], answer)
+        // If you later add DB code, you'd insert here:
+        // dbHelper.insertAnswer(currentUserId, questions[currentIndex], answer)
 
-        val fadeOut = AlphaAnimation(1f, 0f).apply { duration = 200; fillAfter = true }
-        val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 250; fillAfter = true }
+        val fadeOut = AlphaAnimation(1f, 0f).apply {
+            duration = 200
+            fillAfter = true
+        }
+        val fadeIn = AlphaAnimation(0f, 1f).apply {
+            duration = 250
+            fillAfter = true
+        }
 
         questionText.startAnimation(fadeOut)
 
@@ -154,9 +171,8 @@ class HealthSurveyActivity : AppCompatActivity() {
                     questionText.text = questions[currentIndex]
                     questionText.startAnimation(fadeIn)
                 } else {
-                    triggerAIPush()
-                    prefs.edit().putBoolean("survey_completed", true).apply()
-                    goToUserProfile()
+                    // Finished all questions
+                    onSurveyComplete()
                 }
             }
 
@@ -164,8 +180,24 @@ class HealthSurveyActivity : AppCompatActivity() {
         })
     }
 
+    private fun onSurveyComplete() {
+        // Mark survey as completed for THIS USER
+        val surveyKey = getSurveyKeyForUser(currentUserId)
+        prefs.edit().putBoolean(surveyKey, true).apply()
+
+        // Trigger AI plan generation (fake for now)
+        triggerAIPush()
+
+        // Go to profile
+        goToUserProfile()
+    }
+
     private fun goToUserProfile() {
-        startActivity(Intent(this, UserProfileActivity::class.java))
+        val intent = Intent(this, UserProfileActivity::class.java).apply {
+            // Pass user id forward if needed
+            putExtra(EXTRA_USER_ID, currentUserId)
+        }
+        startActivity(intent)
         finish()
     }
 
@@ -174,7 +206,7 @@ class HealthSurveyActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // TODO — Replace with real AI call
+                // TODO — Replace with real AI call when ready
                 val fakeJson = """
                     {
                       "full_plan_text": "Sample plan text...",
@@ -182,15 +214,14 @@ class HealthSurveyActivity : AppCompatActivity() {
                     }
                 """.trimIndent()
 
+                val planObject = JSONObject(fakeJson)
+                val fullPlanText = planObject.getString("full_plan_text")
+                val triggerKeywords = planObject.getString("trigger_keywords")
+
+                // If you add DB later, save AI plan here:
+                // dbHelper.insertAiPlan(currentUserId, fullPlanText, triggerKeywords)
+
                 withContext(Dispatchers.Main) {
-                    val planObject = JSONObject(fakeJson)
-
-                    val fullPlanText = planObject.getString("full_plan_text")
-                    val triggerKeywords = planObject.getString("trigger_keywords")
-
-                    // TODO — Save plan to SQLite (database removed)
-                    // dbHelper.insertAiPlan(currentUserId, fullPlanText, triggerKeywords)
-
                     Toast.makeText(
                         this@HealthSurveyActivity,
                         "Plan successfully generated!",
@@ -206,6 +237,29 @@ class HealthSurveyActivity : AppCompatActivity() {
                     ).show()
                 }
             }
+        }
+    }
+
+    // ---------- HELPERS / COMPANION ----------
+
+    private fun getSurveyKeyForUser(userId: String): String {
+        // Each user gets their own survey flag: "survey_completed_<userId>"
+        return "survey_completed_$userId"
+    }
+
+    companion object {
+        const val EXTRA_USER_ID = "EXTRA_USER_ID"
+
+        /**
+         * Call this when the user deletes their profile.
+         * Example (inside your delete-profile code):
+         *
+         * HealthSurveyActivity.resetSurveyForUser(context, currentUserEmailOrId)
+         */
+        fun resetSurveyForUser(context: Context, userId: String) {
+            val prefs = context.getSharedPreferences("survey_prefs", MODE_PRIVATE)
+            val key = "survey_completed_$userId"
+            prefs.edit().remove(key).apply()
         }
     }
 }

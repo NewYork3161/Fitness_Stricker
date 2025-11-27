@@ -15,13 +15,13 @@ class LoginDatabase(context: Context) :
         private const val DATABASE_NAME = "fitness_striker.db"
         private const val DATABASE_VERSION = 1
 
-        private const val TABLE_USERS = "users"
-        private const val COLUMN_ID = "id"
-        private const val COLUMN_FIRSTNAME = "firstname"
-        private const val COLUMN_LASTNAME = "lastname"
-        private const val COLUMN_EMAIL = "email"
-        private const val COLUMN_PASSWORD = "passwordHash"
-        private const val COLUMN_SALT = "salt"
+        const val TABLE_USERS = "users"
+        const val COLUMN_ID = "id"
+        const val COLUMN_FIRSTNAME = "firstname"
+        const val COLUMN_LASTNAME = "lastname"
+        const val COLUMN_EMAIL = "email"
+        const val COLUMN_PASSWORD = "passwordHash"
+        const val COLUMN_SALT = "salt"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -44,8 +44,12 @@ class LoginDatabase(context: Context) :
         onCreate(db)
     }
 
+    // -------------------------------------------------------------
+    // INSERT USER
+    // -------------------------------------------------------------
     fun insertUser(firstname: String, lastname: String, email: String, password: String): Boolean {
         val db = writableDatabase
+
         val salt = generateSalt()
         val hashedPassword = sha256(salt + password)
 
@@ -60,6 +64,25 @@ class LoginDatabase(context: Context) :
         return db.insert(TABLE_USERS, null, values) != -1L
     }
 
+    // -------------------------------------------------------------
+    // CHECK IF EMAIL EXISTS
+    // -------------------------------------------------------------
+    fun emailExists(email: String): Boolean {
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT $COLUMN_EMAIL FROM $TABLE_USERS WHERE $COLUMN_EMAIL = ?",
+            arrayOf(email)
+        )
+
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
+    // -------------------------------------------------------------
+    // VALIDATE LOGIN PASSWORD
+    // -------------------------------------------------------------
     fun validateUser(email: String, password: String): Boolean {
         val db = readableDatabase
 
@@ -78,10 +101,12 @@ class LoginDatabase(context: Context) :
         cursor.close()
 
         val inputHash = sha256(salt + password)
-
         return storedHash == inputHash
     }
 
+    // -------------------------------------------------------------
+    // CHECK IF NEW PASSWORD IS SAME AS OLD
+    // -------------------------------------------------------------
     fun isSamePassword(email: String, newPassword: String): Boolean {
         val db = readableDatabase
 
@@ -103,6 +128,9 @@ class LoginDatabase(context: Context) :
         return storedHash == newHash
     }
 
+    // -------------------------------------------------------------
+    // UPDATE PASSWORD
+    // -------------------------------------------------------------
     fun updatePassword(email: String, newPassword: String): Boolean {
         val db = writableDatabase
 
@@ -128,11 +156,33 @@ class LoginDatabase(context: Context) :
         return db.update(TABLE_USERS, values, "$COLUMN_EMAIL = ?", arrayOf(email)) > 0
     }
 
+    // -------------------------------------------------------------
+    // UPDATE USER INFORMATION (New: First, Last, Email)
+    // -------------------------------------------------------------
+    fun updateUserInfo(oldEmail: String, newFirst: String, newLast: String, newEmail: String): Boolean {
+        val db = writableDatabase
+
+        val values = ContentValues().apply {
+            put(COLUMN_FIRSTNAME, newFirst)
+            put(COLUMN_LASTNAME, newLast)
+            put(COLUMN_EMAIL, newEmail)
+        }
+
+        return db.update(TABLE_USERS, values, "$COLUMN_EMAIL = ?", arrayOf(oldEmail)) > 0
+    }
+
+
+    // -------------------------------------------------------------
+    // DELETE USER
+    // -------------------------------------------------------------
     fun deleteUser(email: String): Boolean {
         val db = writableDatabase
         return db.delete(TABLE_USERS, "$COLUMN_EMAIL = ?", arrayOf(email)) > 0
     }
 
+    // -------------------------------------------------------------
+    // SECURITY FUNCTIONS
+    // -------------------------------------------------------------
     private fun generateSalt(): String {
         val bytes = ByteArray(16)
         SecureRandom().nextBytes(bytes)

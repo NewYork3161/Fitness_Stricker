@@ -11,27 +11,51 @@
         android:roundIcon="@mipmap/fs_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Fitness_Striker">
-
+        <activity
+            android:name=".EditUserImageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditUserInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditUserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserProfileSettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".UserAgreementActivity"
             android:exported="false" />
-
-        <activity android:name=".WorkoutRoutineActivity" android:exported="false" />
-        <activity android:name=".DietPlanActivity" android:exported="false" />
-        <activity android:name=".UpdateUserActivity" android:exported="false" />
-        <activity android:name=".UserProfileActivity" android:exported="false" />
-        <activity android:name=".HealthSurveyActivity" android:exported="false" />
-        <activity android:name=".CreateAccountActivity" android:exported="false" />
-        <activity android:name=".LoginActivity" android:exported="false" />
-
+        <activity
+            android:name=".WorkoutRoutineActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DietPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UpdateUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HealthSurveyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
+
 </manifest>

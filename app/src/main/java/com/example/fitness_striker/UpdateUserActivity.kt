@@ -24,8 +24,8 @@ class UpdateUserActivity : AppCompatActivity() {
 
         val loginBtn = findViewById<Button>(R.id.loginBtn)
         val updateUserBtn = findViewById<Button>(R.id.updateUserBtn)
-        val deleteUserBtn = findViewById<Button>(R.id.deleteUserBtn)
 
+        // Go back to login
         loginBtn.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
@@ -33,60 +33,52 @@ class UpdateUserActivity : AppCompatActivity() {
 
         updateUserBtn.setOnClickListener {
             val email = emailInput.text.toString().trim()
-            val password = newPasswordInput.text.toString()
+            val newPassword = newPasswordInput.text.toString()
             val rePassword = rePasswordInput.text.toString()
 
-            if (email.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
+            // Empty check
+            if (email.isEmpty() || newPassword.isEmpty() || rePassword.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // Email format check
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Invalid email format.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (password.length < 8) {
+            // Check email exists
+            if (!db.emailExists(email)) {
+                Toast.makeText(this, "No account found with that email.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Password length
+            if (newPassword.length < 8) {
                 Toast.makeText(this, "Password must be at least 8 characters.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (password != rePassword) {
+            // Password match
+            if (newPassword != rePassword) {
                 Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (db.isSamePassword(email, password)) {
+            // Prevent reusing old password
+            if (db.isSamePassword(email, newPassword)) {
                 Toast.makeText(this, "New password cannot be the same as the old one.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val updated = db.updatePassword(email, password)
+            val updated = db.updatePassword(email, newPassword)
             if (updated) {
                 Toast.makeText(this, "Password updated!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             } else {
-                Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        deleteUserBtn.setOnClickListener {
-            val email = emailInput.text.toString().trim()
-
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Enter valid email to delete.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val deleted = db.deleteUser(email)
-
-            if (deleted) {
-                Toast.makeText(this, "Account deleted.", Toast.LENGTH_LONG).show()
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            } else {
-                Toast.makeText(this, "That email does not exist.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error updating password.", Toast.LENGTH_SHORT).show()
             }
         }
     }
